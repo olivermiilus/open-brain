@@ -1,0 +1,9 @@
+{
+  "name": "open-brain-capture",
+  "version": "1.0.0",
+  "description": "Simple capture app for Open Brain",
+  "scripts": {
+    "dev": "echo 'Open index.html in browser'",
+    "build": "echo 'Static site, no build needed'"
+  }
+}

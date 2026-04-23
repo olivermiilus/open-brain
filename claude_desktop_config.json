@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "open-brain": {
+      "command": "/Users/oml/.claude/mcps/open-brain/.venv/bin/python",
+      "args": ["/Users/oml/.claude/mcps/open-brain/mcp_server.py"],
+      "env": {
+        "SUPABASE_URL": "https://sdgmznktypkdjrmwkvqu.supabase.co",
+        "SUPABASE_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNkZ216bmt0eXBrZGpybXdrdnF1Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MjQ4MTk2OSwiZXhwIjoyMDg4MDU3OTY5fQ.CDMNcNp0WbmZBBStQRJqw85zSuJoI03zfqJwS7HjNic"
+      }
+    }
+  }
+}
