@@ -46,3 +46,4 @@ wheels/
 # Project specific
 :memory:
 *.code-workspace
+setup/setup-open-brain.txt.rtf

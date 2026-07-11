@@ -7,20 +7,19 @@ MCP-server för tankar och anteckningar med Supabase-backend (open-brain / pi-me
 | Fil/mapp | Innehåll |
 |----------|----------|
 | `app/` | Serverapplikation |
-| `:memory:/` | Lokal minnesdatabas |
 | `OB1/` | Konfiguration och schemas |
-| `WORK_SETUP.md` | Setup-instruktioner för arbetsinstallation |
-| `add_mcp.sh` | Skript för att lägga till MCP-server |
-| `20260302-nate-ob-promptkit.md` | Promptkit från Nate Jones |
-| `20260302-nate-ob-substack-post.md` | Substack-artikel om open-brain |
+| `setup/` | Setup-instruktioner och config (`WORK_SETUP.md`, `add_mcp.sh`, `set_secret.sh`, `test.sh`, `claude_desktop_config.json`, `vscode-mcp-template.json`, `oml.code-workspace`) |
+| `docs/` | Referensmaterial från Nate Jones (promptkit, Substack-artikel) |
+| `.github/workflows/supabase-keepalive.yml` | Håller Supabase-projektet aktivt (cron, 2x/vecka) |
 
-**Börja här:** `WORK_SETUP.md` → setup-instruktioner. MCP-server konfigureras via `~/.claude/CLAUDE.md`.
+**Börja här:** `setup/WORK_SETUP.md` → setup-instruktioner. MCP-server konfigureras via `~/.claude/CLAUDE.md`.
 
 ## Teknisk kontext
 
-- Credentials: `~/.claude/mcps/open-brain/.env`
+- Credentials: `~/.claude/mcps/open-brain/.env` (bara `.env.example` finns där just nu)
 - MCP-konfiguration: `~/.claude/CLAUDE.md`
 - Supabase-backend för persistent minne
+- Supabase project ref: `sdgmznktypkdjrmwkvqu` — hålls aktivt via GitHub Actions-workflowen ovan
 
 ## Syfte
 
