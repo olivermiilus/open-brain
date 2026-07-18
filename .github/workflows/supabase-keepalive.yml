@@ -1,8 +1,11 @@
 name: Supabase Keepalive
 
-# Håller Supabase-projektet open-brain aktivt genom att göra ett riktigt
-# databasanrop två gånger i veckan (Supabase pausar free-tier-projekt efter
-# >7 dagars inaktivitet). Körs oberoende av om datorn är på.
+# Håller Supabase-projektet open-brain aktivt genom att skriva och sedan
+# radera en rad i databasen två gånger i veckan (Supabase pausar
+# free-tier-projekt efter >7 dagars inaktivitet). En ren läsning (SELECT)
+# räckte inte för att undvika en inaktivitetsvarning från Supabase, så
+# pingen gör nu en riktig skrivning istället — mer garanterat att räknas
+# som aktivitet. Körs oberoende av om datorn är på.
 
 on:
   schedule:
@@ -14,17 +17,43 @@ jobs:
   ping:
     runs-on: ubuntu-latest
     steps:
-      - name: Ping Supabase (thoughts table)
+      - name: Skriv och radera en keepalive-rad (thoughts table)
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
         run: |
-          status=$(curl -s -o /dev/null -w "%{http_code}" \
-            "$SUPABASE_URL/rest/v1/thoughts?select=id&limit=1" \
+          timestamp=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+
+          # Skapa en rad. "Prefer: return=representation" gör att svaret
+          # innehåller den nya radens id, så vi kan radera exakt den.
+          insert_status=$(curl -s -o /tmp/insert_response.json -w "%{http_code}" \
+            -X POST "$SUPABASE_URL/rest/v1/thoughts" \
+            -H "apikey: $SUPABASE_KEY" \
+            -H "Authorization: Bearer $SUPABASE_KEY" \
+            -H "Content-Type: application/json" \
+            -H "Prefer: return=representation" \
+            -d "{\"content\": \"[keepalive-ping] $timestamp\"}")
+          echo "Insert svarade med HTTP $insert_status"
+          if [ "$insert_status" -ge 400 ]; then
+            echo "::error::Insert misslyckades (HTTP $insert_status)"
+            cat /tmp/insert_response.json
+            exit 1
+          fi
+
+          row_id=$(jq -r '.[0].id' /tmp/insert_response.json)
+          if [ -z "$row_id" ] || [ "$row_id" = "null" ]; then
+            echo "::error::Fick inget id tillbaka från insert"
+            cat /tmp/insert_response.json
+            exit 1
+          fi
+
+          # Radera samma rad igen så keepalive-pingar inte skräpar ner minnet.
+          delete_status=$(curl -s -o /dev/null -w "%{http_code}" \
+            -X DELETE "$SUPABASE_URL/rest/v1/thoughts?id=eq.$row_id" \
             -H "apikey: $SUPABASE_KEY" \
             -H "Authorization: Bearer $SUPABASE_KEY")
-          echo "Supabase svarade med HTTP $status"
-          if [ "$status" -ge 400 ]; then
-            echo "::error::Supabase-anropet misslyckades (HTTP $status)"
+          echo "Delete svarade med HTTP $delete_status"
+          if [ "$delete_status" -ge 400 ]; then
+            echo "::error::Delete misslyckades (HTTP $delete_status)"
             exit 1
           fi
